@@ -1,0 +1,121 @@
+#!/bin/bash
+
+# Run this in homeDir + calibeScripts or something
+
+echo "[$(date)]" beginning download 
+
+##############################
+###  Download and Convert  ###
+##############################
+
+
+NYTName="NYT.epub"
+WSJName="WSJ.epub"
+STName="ST.epub"
+
+
+ebook-convert "The New York Times".recipe "$NYTName" & 
+P1=$!
+ebook-convert "The Wall Street Journal (free)".recipe "$WSJName" &
+P2=$!
+ebook-convert "The Seattle Times".recipe "$STName" &
+P3=$!
+
+wait $P1
+wait $P2
+wait $P3
+
+
+echo "[$(date)]" completed download and conversion
+
+
+
+## Special Convert for NYT
+
+
+# unzip 
+unzip $NYTName -d ${NYTName}_unzipped
+
+# compress images
+find ${NYTName}_unzipped | grep "\.jpg$" | xargs -n1 -P8 -I{} convert -quality 50 "{}" "{}opt"
+
+# remove originals 
+find ${NYTName}_unzipped | grep "jpgopt$" | xargs -n1 -P8 -I{} echo mv "{}" "{}" | sed "s/jpgopt/jpg/2" | bash
+
+# rezip
+cd ${NYTName}_unzipped && zip -r ../$NYTName * && cd ..  && rm -r ${NYTName}_unzipped
+
+echo "[$(date)]" completed NYT Compress
+
+
+ebook-polish -i "$NYTName" &
+P1=$!
+ebook-polish -i "$WSJName" & 
+P2=$!
+ebook-polish -i "$STName" & 
+P3=$!
+
+wait $P1
+wait $P2
+wait $P3
+
+mv $(echo "${NYTName}_polished.epub" | sed "s/\.epub//1") "$NYTName" 
+mv $(echo "${WSJName}_polished.epub" | sed "s/\.epub//1") "$WSJName" 
+mv $(echo "${STName}_polished.epub" | sed "s/\.epub//1") "$STName" 
+
+
+echo "[$(date)]" completed polish
+
+
+###################
+#  Add to Calibre #
+###################
+
+
+calibredb add --library-path "http://localhost:8080/#Calibre_Library" "$NYTName"
+calibredb add --library-path "http://localhost:8080/#Calibre_Library" "$WSJName"
+calibredb add --library-path "http://localhost:8080/#Calibre_Library" "$STName"
+
+
+echo "[$(date)]" completed library add
+
+
+##########
+# Email  #
+##########
+
+
+# At this point there are two files, the converted and the calibreDB version. They are identical, so we can send either. 
+
+# However, the one in the calibreDB has a good title, so may as well use that if it's easy to locate. Best way to compare is probably do a quick sha1 comparison... 
+
+calibre-smtp -r smtp.gmail.com -u 97danny.white@gmail.com -p "uiei jkpq vdhg wxwg" --port 587  97danny.white@gmail.com 97danny.white_CgFKwaRQLRIkVg@kindle.com 'Your new New York Times.' -a "$NYTName" -s 'Your new New York Times.'
+
+sleep 60
+
+calibre-smtp -r smtp.gmail.com -u 97danny.white@gmail.com -p "uiei jkpq vdhg wxwg" --port 587  97danny.white@gmail.com 97danny.white_CgFKwaRQLRIkVg@kindle.com 'Your new Wall Street Journal.' -a "$WSJName" -s 'Your new Wall Street Journal.'
+
+sleep 60
+
+calibre-smtp -r smtp.gmail.com -u 97danny.white@gmail.com -p "uiei jkpq vdhg wxwg" --port 587  97danny.white@gmail.com 97danny.white_CgFKwaRQLRIkVg@kindle.com 'Your new Seattle Times.' -a "$STName" -s 'Your new Seattle Times.'
+
+echo "[$(date)]" sent emails
+
+
+##############################
+#  Remove From the temp Dir  #
+##############################
+
+# remove books older than 10d. This will only list files, need to update a bit in a few days when the directory is hydrated to actually work
+rm "$NYTName" "$WSJName" "$STName"
+
+echo "[$(date)]" cleaned up 
+
+echo "[$(date)]" exiting at $(date)
+
+##############################
+#  Remove From the catalog   #
+##############################
+# calibredb list -f identifiers,title,last_modified --sort-by last_modified
+# do some kinda grep tail, or otherwise to get all id's that are older than 10d
+# calibredb remove ids
