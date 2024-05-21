@@ -71,13 +71,14 @@ echo "[$(date)]" completed polish
 #  Add to Calibre #
 ###################
 
+# (not really necessary  I dont want to keep old newspapers)
 
-calibredb add --library-path "http://localhost:8080/#Calibre_Library" "$NYTName"
-calibredb add --library-path "http://localhost:8080/#Calibre_Library" "$WSJName"
-calibredb add --library-path "http://localhost:8080/#Calibre_Library" "$STName"
+# calibredb add --library-path "http://localhost:8080/#Calibre_Library" "$NYTName"
+# calibredb add --library-path "http://localhost:8080/#Calibre_Library" "$WSJName"
+# calibredb add --library-path "http://localhost:8080/#Calibre_Library" "$STName"
 
 
-echo "[$(date)]" completed library add
+# echo "[$(date)]" completed library add
 
 
 ##########
