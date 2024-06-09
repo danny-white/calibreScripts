@@ -11,19 +11,17 @@ echo "[$(date)]" beginning download
 
 NYTName="NYT.$(date "+%Y-%m-%d").epub"
 WSJName="WSJ.$(date "+%Y-%m-%d").epub"
-STName="ST.$(date "+%Y-%m-%d").epub"
+
 
 
 ebook-convert "The New York Times".recipe "$NYTName" & 
 P1=$!
 ebook-convert "The Wall Street Journal (free)".recipe "$WSJName" &
 P2=$!
-ebook-convert "The Seattle Times".recipe "$STName" &
-P3=$!
 
 wait $P1
 wait $P2
-wait $P3
+
 
 
 echo "[$(date)]" completed download and conversion
@@ -52,16 +50,15 @@ ebook-polish -i "$NYTName" &
 P1=$!
 ebook-polish -i "$WSJName" & 
 P2=$!
-ebook-polish -i "$STName" & 
-P3=$!
+
 
 wait $P1
 wait $P2
-wait $P3
+
 
 mv $(echo "${NYTName}_polished.epub" | sed "s/\.epub//1") "$NYTName" 
 mv $(echo "${WSJName}_polished.epub" | sed "s/\.epub//1") "$WSJName" 
-mv $(echo "${STName}_polished.epub" | sed "s/\.epub//1") "$STName" 
+
 
 
 echo "[$(date)]" completed polish
@@ -75,7 +72,7 @@ echo "[$(date)]" completed polish
 
 # calibredb add --library-path "http://localhost:8080/#Calibre_Library" "$NYTName"
 # calibredb add --library-path "http://localhost:8080/#Calibre_Library" "$WSJName"
-# calibredb add --library-path "http://localhost:8080/#Calibre_Library" "$STName"
+
 
 
 # echo "[$(date)]" completed library add
@@ -96,10 +93,6 @@ sleep 60
 
 calibre-smtp -r smtp.gmail.com -u 97danny.white@gmail.com -p "uiei jkpq vdhg wxwg" --port 587  97danny.white@gmail.com 97danny.white_CgFKwaRQLRIkVg@kindle.com 'Your new Wall Street Journal.' -a "$WSJName" -s 'Your new Wall Street Journal.'
 
-# sleep 60
-
-# calibre-smtp -r smtp.gmail.com -u 97danny.white@gmail.com -p "uiei jkpq vdhg wxwg" --port 587  97danny.white@gmail.com 97danny.white_CgFKwaRQLRIkVg@kindle.com 'Your new Seattle Times.' -a "$STName" -s 'Your new Seattle Times.'
-
 echo "[$(date)]" sent emails
 
 
@@ -108,7 +101,7 @@ echo "[$(date)]" sent emails
 ##############################
 
 # remove books older than 10d. This will only list files, need to update a bit in a few days when the directory is hydrated to actually work
-rm "$NYTName" "$WSJName" "$STName"
+rm "$NYTName" "$WSJName" 
 
 echo "[$(date)]" cleaned up 
 
