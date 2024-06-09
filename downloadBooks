@@ -9,9 +9,9 @@ echo "[$(date)]" beginning download
 ##############################
 
 
-NYTName="NYT.epub"
-WSJName="WSJ.epub"
-STName="ST.epub"
+NYTName="NYT.$(date "+%Y-%m-%d").epub"
+WSJName="WSJ.$(date "+%Y-%m-%d").epub"
+STName="ST.$(date "+%Y-%m-%d").epub"
 
 
 ebook-convert "The New York Times".recipe "$NYTName" & 
@@ -96,9 +96,9 @@ sleep 60
 
 calibre-smtp -r smtp.gmail.com -u 97danny.white@gmail.com -p "uiei jkpq vdhg wxwg" --port 587  97danny.white@gmail.com 97danny.white_CgFKwaRQLRIkVg@kindle.com 'Your new Wall Street Journal.' -a "$WSJName" -s 'Your new Wall Street Journal.'
 
-sleep 60
+# sleep 60
 
-calibre-smtp -r smtp.gmail.com -u 97danny.white@gmail.com -p "uiei jkpq vdhg wxwg" --port 587  97danny.white@gmail.com 97danny.white_CgFKwaRQLRIkVg@kindle.com 'Your new Seattle Times.' -a "$STName" -s 'Your new Seattle Times.'
+# calibre-smtp -r smtp.gmail.com -u 97danny.white@gmail.com -p "uiei jkpq vdhg wxwg" --port 587  97danny.white@gmail.com 97danny.white_CgFKwaRQLRIkVg@kindle.com 'Your new Seattle Times.' -a "$STName" -s 'Your new Seattle Times.'
 
 echo "[$(date)]" sent emails
 
